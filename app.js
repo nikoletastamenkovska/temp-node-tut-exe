@@ -1,24 +1,32 @@
-const http = require('http');
+const { readFile, writeFile } = require('fs');
+const util = require('util');
+const readFilePromise = util.promisify(readFile)
+const writeFilePromise = util.promisify(writeFile)
 
-const server = http.createServer((req, res) => {
-    if (req.url === '/') {
-        res.end('Home Page')
+const start = async () => {
+    try {
+        const first = await readFilePromise('./content/first.txt', 'utf8');
+        const second = await readFilePromise('./content/second.txt', 'utf8');
+        await writeFilePromise('./content/result-mind-grenade.txt', `THIS IS AWESOME : ${first} ${second}`)
+    } catch (error) {
+        console.log(error);
     }
-    else if (req.url === '/about') {
-        res.end('About Page')
-        // BLOCKING CODE !!!
-        // for (let i = 0; i < 1000; i++) {
-        //     for (let j = 0; j < 1000; j++) {
-        //         console.log(`${i} ${j}`);
-        //     }
-        // }
-    }
-    else {
-        res.end('Error Page')
-    }
-})
+}
 
-server.listen(5000, () => {
-    console.log('server is listening on port: 5000...');
+start()
 
-})
+// THIS IS WITHOUT USING THE MODULE UTIL
+// const getText = (path) => {
+//     return new Promise((resolve, reject) => {
+//         readFile(path, 'utf8', (err, data) => {
+//             if (err) {
+//                 reject(err)
+//             } else {
+//                 resolve(data)
+//             }
+//         });
+//     })
+// }
+
+// getText('./content/first.txt').then((result) => console.log(result)).catch((err) => console.log(err));
+
